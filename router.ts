@@ -156,3 +156,10 @@ router.get("/register", async (ctx: Context) => {
     ctx.response.body = responseText;
     ctx.response.status = 200;
 });
+
+Deno.cron("Purge webhook events every 12 hours", "0 */12 * * *", async () => {
+    const allEntries = await Array.fromAsync(kv.list({ prefix: [] }));
+    for (const entry of allEntries) {
+        kv.set([entry.key.toString()], []);
+    }
+});
